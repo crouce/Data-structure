@@ -1,0 +1,194 @@
+#include<stdio.h>
+#include<stdlib.h>
+//针对于顺序表的抽象
+typedef struct ArrayList {
+	int* e;//存放数据的数组
+	int size;//当前数组中元素的数量
+	int length;//顺序表中数据的总数量
+}MyArray;
+
+MyArray initArray();
+void add(MyArray* arr, int key);//添加一个元素
+void add_index(MyArray* arr, int index, int key);//在指定位置添加元素
+void delete(MyArray* arr, int key);//删除一个元素
+void modification(MyArray* arr, int index, int key);//修改指定的元素
+int find(MyArray* arr, int key);//查询操作
+
+int Number = 5;//全局变量
+//初始化一个数组
+MyArray initArray()
+{
+	MyArray array;
+	array.e = (int*)malloc(sizeof(int) * Number);//初始化
+	if (!array.e)
+	{
+		printf("初始化失败");
+		exit(0);
+	}
+	array.size = 0;
+	array.length = Number;
+	printf("初始化成功\n");
+	return array;
+}
+/*添加的判断界面*/
+void add_decide(MyArray* arr, char change, int key)
+{
+	void menu(MyArray * arr, int key, char change);
+	printf("是否要存入元素(Y/N)：");
+	scanf_s("%c", &change);
+	if (change == 'Y' || change == 'y')
+	{
+		change = '0';
+		add(arr, key);
+	}
+	else
+	{
+		menu(arr, key, change);//返回主界面
+	}
+}
+//按顺序添加一个元素
+/*
+MyArray* arr 待添加元素的数组（指针）
+int key 待添加的关键字
+*/
+void add(MyArray* arr, int key)
+{
+	char change = '0';
+	MyArray array;
+	printf("\n请输入元素:");
+	scanf_s("%d", &key);//输入元素
+	if (arr->size < arr->length)
+	{
+
+		arr->e[arr->size] = key;
+		arr->size++;//当前元素个数  + 1
+		printf("储存成功");
+	}
+	else
+	{
+		arr->e = (int*)malloc(sizeof(int) * 5);//自动扩容或者提示用户数据满了
+		if (!arr->e)
+		{
+			printf("扩容失败");
+			exit(0);
+		}
+		arr->length = Number + 5;//长度加5
+		printf("扩容成功，正在重新储存");
+		arr->e[arr->size] = key;
+		arr->size++;//当前元素个数  + 1
+		printf("储存成功");
+	}
+	add_decide(arr, change, key);
+}
+
+void find_decide(MyArray* arr, char change, int key)
+{
+	void menu(MyArray * arr, int key, char change);
+	printf("是否要查询元素(Y/N)：");
+	scanf_s("%c", &change);
+	if (change == 'Y' || change == 'y')
+	{
+		change = '0';
+		find(arr, key);
+	}
+	else
+	{
+		menu(arr, key, change);//返回主界面
+	}
+}
+/*
+查询操作
+日志 保存错误
+*/
+int find(MyArray* arr, int key)
+{
+	int i;
+	if (arr->size == 0)
+	{
+		printf("没有该元素");
+	}
+	else
+	{
+		for (i = 0; i < arr->size; i++)
+		{
+			if (arr->e[i] == key)
+			{
+				return i;
+			}
+
+		}
+	}
+
+	return -1;
+}
+
+void delete_decide(MyArray* arr, int key, char change)
+{
+	void menu(MyArray * arr, int key, char change);
+	printf("是否要删除元素(Y/N)：");
+	scanf_s("%c", &change);
+	if (change == 'Y' || change == 'y')
+	{
+		change = '0';
+		delete(arr, key);
+	}
+	else
+	{
+		menu(arr, key, change);//返回主界面
+	}
+}
+/*
+
+	MyArray* arr
+	int key 需要删除的关键字
+*/
+void delete(MyArray* arr, int key)
+{
+	//找到关键字的下标
+	int temp_index = find(arr, key);
+	if (temp_index == -1)
+	{
+		printf("没有该元素\n");//没有找到 
+		return;//结束这个函数
+	}
+	else
+	{
+		while (temp_index < arr->size - 1)
+		{
+			//后面的元素往前面移动
+			arr->e[temp_index] = arr->e[temp_index + 1];
+			temp_index++;
+		}
+		//移动完 数据元素个数-1
+		arr->size--;
+	}
+
+}
+void menu(MyArray* arr, int key, char change)
+{
+	char choice;
+	change = '0';
+	printf("请选择你接下来的操作：\n");
+	printf("想增加元素，请输入数字1\n");
+	printf("想查询元素，请输入数字2\n");
+	printf("想删除元素，请输入数字3\n");
+	scanf_s("%c", &choice);
+	switch (choice)
+	{
+	case'1':add_decide(arr, change, key); break;
+	case'2':find_decide(arr, change, key); break;
+	case'3':delete_decide(arr, change, key); break;
+	default:exit(0);
+	}
+
+}
+
+main()
+{
+	MyArray array;
+	array = initArray();
+	int key = 0;//初始化关键词
+	MyArray* arr = &array;//初始化结构体指针
+	char change = '0';
+	menu(arr, key, change);
+}
