@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+/*带头结点的单链表*/
+typedef struct LinkList {
+	int data;//存放数据的数据域
+	struct LinkList* next;//当一个指针没有指向任何东西的时候 先置位NULL
+}Node;
+
+Node* InitList(Node* node);//初始化链表
+void head_insert(Node* node, int key);//头插法 往前插入
+void delete(Node*, int key);
+int index(Node* node, int key);//查找元素
+
+Node* InitList(Node* node)
+{
+	node = (Node*)malloc(sizeof(Node));//初始化
+	if (node == NULL)//判断是否初始化成功
+	{
+		printf("初始化成功\n");
+	}
+	else
+	{
+		node->next = NULL;//变成空指针
+	}
+	return node;//有返回值，要有接收的值
+}
+void head_insert(Node* node, int key)//头插法 往前插入
+{
+	Node* temp = (Node*)malloc(sizeof(Node));//申请一个新的结点
+	if (temp == NULL)//切记判断
+	{
+		if (node == NULL)
+		{
+			printf("当前节点为首元节点");
+		}
+		else
+		{
+			printf("申请新节点失败");
+		}
+	}
+	else
+	{
+		temp->data = key;
+		temp->next = node->next;
+		node->next = temp;
+	}
+}
+
+int index(Node* node, int key)
+{
+	//记得判断
+	Node* temp;//定义一个临时指针
+	temp = node->next;//让临时指针指向首元结点
+	int i = 0;
+	while (temp != NULL)
+	{
+		if (temp->data == key)
+		{
+			return i;
+		}
+		temp = temp->next;
+		i++;
+
+	}
+
+	return -1;
+
+}
+
+void delete(Node* node, int key)
+{
+	//有没有这个元素
+	int index = find(node, key);
+	if (index == -1)
+	{
+		printf("未找到该元素");
+	}
+	else
+	{
+		int i = 0;
+		Node* temp = node;
+		while (i < index)//先定位好指针
+		{
+			temp = temp->next;
+			i++;
+
+		}
+		Node* free_node = temp->next;
+		temp->next = temp->next->next;
+		free(free_node);//销毁相对应的空间
+	}
+}
